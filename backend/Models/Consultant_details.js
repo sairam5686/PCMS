@@ -17,7 +17,6 @@ const consultant_info = new mongoose.Schema({
   },
   attendance_rating: {
     type: String,
-    enum: ['Excellent', 'Good', 'Average', 'Poor'],
     default: 'Not Rated'
   },
 

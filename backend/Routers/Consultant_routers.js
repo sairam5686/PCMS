@@ -1,6 +1,8 @@
 const express = require('express');
 const Router = express.Router();
 const opper_model  = require('../Models/Oppertunities_model');
+const consultant_model = require('../Models/Consultant_details');
+
 
 
 
@@ -14,6 +16,7 @@ Router.get('/oppertunitiesdata', async (req ,res ) => {
         
     }
 })
+
 
 
 
