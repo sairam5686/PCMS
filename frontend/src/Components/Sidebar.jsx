@@ -86,10 +86,13 @@ const Sidebar = () => {
              <p>Reviewer AI</p> 
         </li>
 
+
+        <Link to={'/consultant_login'}>
         <li className='flex gap-3 p-3 rounded w-full justify-left flex-row items-center  hover:text-white hover:bg-red-500 duration-300'>
             <CiLogout className='inline-block h-5 w-5 ' />
              <p>Log out</p> 
         </li>
+        </Link>
        
     </ul>
     </div>

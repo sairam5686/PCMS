@@ -62,7 +62,7 @@ const jobData = [
 
 
 
-export const Oppertunities_list = () => {
+export const Oppertunities_list = ({view_oppertunities}) => {
 
 
   return (
@@ -97,45 +97,39 @@ export const Oppertunities_list = () => {
 
       <div className='w-full h-max p-20 overflow-y-scroll'>
 
-       {jobData.map((job) => (
+       {view_oppertunities.map((view_oppertunities) => (
         <div
-          key={job.id}
+          key={view_oppertunities._id}
           className="bg-white p-6 rounded-xl shadow-md border-2  mb-6 border-gray-200 hover:shadow-lg transition-all"
         >
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-semibold">{job.title}</h2>
-            <span
-              className={`text-sm text-white px-2 py-1 rounded-full ${
-                job.status === 'closing soon' ? 'bg-yellow-500' : 'bg-green-500'
-              }`}
-            >
-              {job.status}
-            </span>
+            <h2 className="text-xl font-semibold">{view_oppertunities.opper_title}</h2>
+            
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">{job.subtitle}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">{view_oppertunities.opper_project}</h3>
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
             <div className="flex items-center gap-1">
               <BsBuilding />
-              <span>{job.type}</span>
+              <span>{view_oppertunities.opper_category}</span>
             </div>
             <div className="flex items-center gap-1">
               <FaMapMarkerAlt />
-              <span>{job.location}</span>
+              <span>{view_oppertunities.opper_location}</span>
             </div>
             <div className="flex items-center gap-1">
               <FaClock />
-              <span>{job.duration}</span>
+              <span>{view_oppertunities.opper_duration}</span>
             </div>
           </div>
 
-          <p className="text-gray-700 mb-4">{job.description}</p>
+          <p className="text-gray-700 mb-4">{view_oppertunities.opper_description}</p>
 
           <div className="mb-4">
             <h4 className="font-semibold mb-2">Requirements:</h4>
             <div className="flex flex-wrap gap-2">
-              {job.requirements.map((req, i) => (
+              {view_oppertunities.opper_requirements.map((req, i) => (
                 <span
                   key={i}
                   className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
@@ -150,8 +144,8 @@ export const Oppertunities_list = () => {
 
           <div className="flex justify-between items-center">
             <div className="flex flex-col text-sm text-gray-500 mb-4">
-              <span>Posted: {job.posted}</span>
-              <span>Deadline: {job.deadline}</span>
+              <span>Posted: {view_oppertunities.opper_postedDate}</span>
+              <span>Deadline: {view_oppertunities.opper_deadline}</span>
             </div>
 
             <button className="bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition">

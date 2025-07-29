@@ -11,7 +11,7 @@ import My_applications from './Pages/Consultant/Oppertunities/My_applications.js
 
 const routes = createBrowserRouter([
   {
-    path:'/',
+    path:'/consultant_login',
     element:<App/>
   },
   {
