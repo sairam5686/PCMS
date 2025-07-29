@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const body_parser = require('body-parser');
 const connectionDB = require('./ConnectionDB/DBconfig')
+const opper_model  = require('./Models/Oppertunities_model')
 
 
 connectionDB();
@@ -19,8 +20,17 @@ app.use(express.urlencoded({extended: true}))
 
 
 
-
-
+app.get('/oppertunitiesdata', async (req ,res ) => {
+    try {
+        const opper_data = await opper_model.find({});
+        console.log(opper_data);
+        
+        res.send(opper_data.json);
+    } catch (error) {
+        console.log(error);
+        
+    }
+})
 
 
 

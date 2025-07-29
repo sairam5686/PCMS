@@ -49,4 +49,4 @@ const opp_schema =  new mongoose.Schema({
 
 
 
-module.exports = mongoose.model("oppertunities",opp_schema);
+module.exports = mongoose.model("Oppertunitues",opp_schema);
