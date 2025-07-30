@@ -14,6 +14,7 @@ const cors_option = {
 
 app.use(cors(cors_option));
 app.use(body_parser.json());
+app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
 connectionDB();
