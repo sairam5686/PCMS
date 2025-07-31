@@ -34,7 +34,8 @@ useEffect(() => {
     <Sidebar />
   </div>
   <div className='overflow-y-auto mb-5'>
-    <Analytics_consultant />
+   
+    {User_details ?   (<Analytics_consultant  details ={User_details} />) : (<h1> Fetching the details </h1>)}
   </div>
 </div>
 

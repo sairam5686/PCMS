@@ -26,7 +26,7 @@ const Sidebar = () => {
     </div>
     <div className=''>
         <h2 className='text-xl font-black font-semibold'>Sairam</h2>
-        <p className='text-sm text-zinc-500 font-light'>Comsultant</p>
+        <p className='text-sm text-zinc-500 font-light'>Consultant</p>
     </div>
     </div>
         {/* this if for name end */}

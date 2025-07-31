@@ -30,7 +30,7 @@ const workHistoryData = [
   },
 ];
 
-const WorkHistory = () => {
+const WorkHistory = ({work_details}) => {
   return (
     <div className="px-6 py-10 max-w-4xl mx-auto">
       {/* Header */}
@@ -46,19 +46,19 @@ const WorkHistory = () => {
       </p>
 
       {/* Timeline */}
-      {workHistoryData.map((job, index) => (
+      {work_details.map((job, index) => (
         <div key={index} className="mb-10">
-          <div className="text-gray-500 font-medium">{job.period}</div>
+          <div className="text-gray-500 font-medium">{job.start_year_to_end_year}</div>
           <div className="mt-1">
-            <h3 className={`text-xl font-semibold ${job.logoColor}`}>
-              {job.company}
+            <h3 className={`text-xl font-semibold text-green-600`}>
+              {job.company_name}
             </h3>
-            <p className="font-semibold text-gray-800">{job.title}</p>
-            <p className="text-sm text-gray-500 mb-3">{job.subtitle}</p>
+            <p className="font-semibold text-gray-800">{job.role}</p>
+            <p className="text-sm text-gray-500 mb-3">No of years worked : {job.duration}</p>
             <ul className="list-disc pl-6 space-y-1 text-gray-700">
-              {job.bullets.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
+           
+                <li >{job.description_of_role}</li>
+         
             </ul>
           </div>
         </div>
