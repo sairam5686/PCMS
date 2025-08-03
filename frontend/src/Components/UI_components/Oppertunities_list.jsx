@@ -144,8 +144,8 @@ export const Oppertunities_list = ({view_oppertunities}) => {
 
           <div className="flex justify-between items-center">
             <div className="flex flex-col text-sm text-gray-500 mb-4">
-              <span>Posted: {view_oppertunities.opper_postedDate}</span>
-              <span>Deadline: {view_oppertunities.opper_deadline}</span>
+              <span>Posted: {new Date(view_oppertunities.opper_postedDate).toLocaleDateString("en-GB")}</span>
+              <span>Deadline: {new Date(view_oppertunities.opper_deadline).toLocaleDateString("en-GB")}</span>
             </div>
 
             <button className="bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition">

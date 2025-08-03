@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 const Dashboard = () => {
+
     const navigate = useNavigate();
   const [User_details, setUser_details] = useState(null);
 
@@ -15,14 +16,12 @@ useEffect(() => {
     const user = JSON.parse(localStorage.getItem("users")); 
 
     if (!user) {
-      
       navigate("/consultant_login");
     } else {
       // ✅ Set user details
       console.log(user);
+      
       setUser_details(user);
-      
-      
     }
   }, [navigate]);
 

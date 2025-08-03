@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { CiClock2 } from "react-icons/ci";
 import { PiMedalLight } from "react-icons/pi";
 import { IoBookOutline } from "react-icons/io5";
@@ -14,7 +14,51 @@ import { CiCalendar } from "react-icons/ci";
 
 
 
-const Attendance_consultant = () => {
+const Attendance_consultant = ({attendance_detail}) => {
+
+const [Total_login, setTotal_login] = useState(0)
+const [Total_present, setTotal_present] = useState(0)
+
+    const total_login_and_present_day = ()=>{
+            const login_hours = attendance_detail.attendance.filter((item)=>{
+                if((item.status.toLowerCase()) == "sick"){
+                    return false
+                }else{
+                    return true
+                }
+            })
+
+            let sums = 0
+            login_hours.forEach(element => {
+                sums +=element.login_logout_hour;
+            });
+            setTotal_login(sums)
+            
+            const new_filter_arr = attendance_detail.attendance.filter((item)=>{
+            if ( item.status.toLowerCase() == "present") {
+                return true
+            }else if( item.status.toLowerCase() == "work from home"){
+                return true
+            }else{
+                return false
+            }
+        } )
+
+        setTotal_present(((  new_filter_arr.length /attendance_detail.attendance.length)*100).toFixed(2))
+
+
+    }
+
+
+    useEffect(() => {
+      
+    total_login_and_present_day()
+      
+    }, [])
+    
+
+
+
   return (
      <div className='flex flex-col justify-center'>
         <div className='flex flex-row justify-left items-center border-b-2 border-gray-200 p-5'>
@@ -31,8 +75,8 @@ const Attendance_consultant = () => {
                             </div>
         
                             <div className='flex  flex-col '>
-                                <h2 className='text-2xl font-black font-bold'>28</h2>
-                                <p className='text-xs font-light text-gray-500'>out of 30 working days</p>
+                                <h2 className='text-2xl font-black font-bold'>{Total_present}</h2>
+                                <p className='text-xs font-light text-gray-500'>out of {attendance_detail.attendance.length} working days</p>
                             </div>
                         </div>
         
@@ -40,12 +84,12 @@ const Attendance_consultant = () => {
         
                         <div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
                             <div className=' flex justify-between items-center'>
-                                <h6 className='text-sm font-semibold'>Total loggin hours</h6>
+                                <h6 className='text-sm font-semibold'>Total login hours</h6>
                                 <CiCalendar className='inline-block '/>
                             </div>
         
                             <div className='flex  flex-col '>
-                                <h2 className='text-2xl font-black font-bold'>56.7</h2>
+                                <h2 className='text-2xl font-black font-bold'>{Total_login}</h2>
                                 <p className='text-xs font-light text-gray-500'>hours worked this month</p>
                             </div>
                         </div>
@@ -69,12 +113,12 @@ const Attendance_consultant = () => {
         
         <div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
                             <div className=' flex justify-between items-center'>
-                                <h6 className='text-sm font-semibold'>Attendace rate</h6>
+                                <h6 className='text-sm font-semibold'>Attendace rating</h6>
                                 <MdOutlineVerified className='inline-block '/>
                             </div>
         
                             <div className='flex  flex-col '>
-                                <h2 className='text-2xl text-emerald-600 font-bold'>Excellent</h2>
+                                <h2 className='text-2xl text-emerald-600 font-bold'>{attendance_detail.attendance_rating}</h2>
                                 <p className='text-xs font-light text-gray-500'>Attendance performance</p>
                             </div>
                         </div>
@@ -146,7 +190,7 @@ const Attendance_consultant = () => {
             
                     
                     
-
+        {/* This is attendace History start */}
                     <div className="h-full w-[45%]  p-8 border-2 border-gray-200 rounded-2xl flex flex-col justify-between">
                       
                             <div>
@@ -157,110 +201,36 @@ const Attendance_consultant = () => {
                              <div className=' h-[90%] mt-5  w-full overflow-y-scroll overflow-x-hidden   [&::-webkit-scrollbar]:w-2[&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full  [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-white-700 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-300 '>
                                 <ul className='flex flex-col gap-5 '>
             
-                                    <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
+                                { attendance_detail.attendance.map((item , index) =>(
+                                     
+                                   <li key={index} className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
                                         <div>
-                                        <h4>Thu, Feb 1</h4>
-                                        <p className='text-emerald-500 text-sm font-semibold'>present</p>
+                                        <h4>{new Date(item.date).toLocaleDateString('en-US', {weekday: 'long',year: 'numeric',month: 'long',day: 'numeric'})}</h4>
+                                        <p className={`${
+                                            item.status === "Present"
+                                                ? "text-emerald-500"
+                                                : item.status === "Sick"
+                                                ? "text-red-500"
+                                                : "text-blue-500"
+                                            } text-sm font-semibold`}>
+                                            {item.status}
+                                            </p>
                                         </div>
                                         <div> 
-                                       <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>
+                                       <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">{item.login_logout_hour} hours</span>
 
                                         </div>
                                     </li>
-            
-            
-            
-                                    <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Fri, Feb 2 </h4>
-                                        <p className='text-emerald-500 text-sm font-semibold'>Present</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>
-                                        </div>
-                                    </li>
-            
-            
-            
-                                    <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Sat, Feb 3</h4>
-                                        <p className='text-blue-500 text-sm font-semibold'>Work from home</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>                                        </div>
-                                    </li>
-            
-            
-                                    <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Mon, Feb 5</h4>
-                                        <p className='text-red-500 text-sm font-semibold'>Absent</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>                                        </div>
-                                    </li>
-
-
-                                     <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Mon, Feb 5</h4>
-                                        <p className='text-red-500 text-sm font-semibold'>Absent</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>                                        </div>
-                                    </li>
-
-
-
-                                     <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Mon, Feb 5</h4>
-                                        <p className='text-red-500 text-sm font-semibold'>Absent</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>                                        </div>
-                                    </li>
-
-
-
-                                     <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Mon, Feb 5</h4>
-                                        <p className='text-red-500 text-sm font-semibold'>Absent</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>                                        </div>
-                                    </li>
-
-
-
-
-                                     <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                                        <div>
-                                        <h4>Mon, Feb 5</h4>
-                                        <p className='text-red-500 text-sm font-semibold'>Absent</p>
-                                        </div>
-                                        <div> 
-<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">8 hours</span>                                        </div>
-                                    </li>
-
-
-
-
-
-
-
-
-
-
-
-                                 
+                                ))}
+                                     
                                 </ul>
                             </div>
                         </div>
                 
                 </div>
+
+        {/* This is attendace History end */}
+
             
                   {/* for chart and Training end */}
 
