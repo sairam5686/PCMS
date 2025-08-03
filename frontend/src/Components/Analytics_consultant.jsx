@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { CiClock2 } from "react-icons/ci";
 import { PiMedalLight } from "react-icons/pi";
 import { IoBookOutline } from "react-icons/io5";
@@ -10,12 +10,70 @@ import { FaGears } from "react-icons/fa6";
 import { HiPencilAlt } from "react-icons/hi";
 import { FaRegTrashAlt } from "react-icons/fa";
 import WorkHistory from './UI_components/WorkHistory';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { motion } from 'framer-motion';
+
+
 
 
 
 const Analytics_consultant = ({details}) => {
-    console.log(details);
+    const [Attendance_average, setAttendance_average] = useState(0)
+    const [Training_average, setTraining_average] = useState(0)
     
+    const caluc_average = () => {
+        const new_filter_arr = details.attendance.filter((item)=>{
+            if ( item.status.toLowerCase() == "present") {
+                return true
+            }else if( item.status.toLowerCase() == "work from home"){
+                return true
+            }else{
+                return false
+            }
+        } )
+
+ const new_filter_train = details.training.filter((item)=>{
+            if ( item.status.toLowerCase() == "completed") {
+                return true
+            }else{
+                return false
+            }
+        } )
+
+        setTraining_average(((  new_filter_train.length /details.training.length)* 100).toFixed(2) )
+        setAttendance_average(((  new_filter_arr.length /details.attendance.length)*100).toFixed(2))
+    }
+    
+    useEffect(() => {
+      caluc_average()
+    }, [Attendance_average , Training_average])
+
+
+
+    const chartData = useMemo(() => {
+    const statusCount = {};
+
+    details.attendance.forEach((record) => {
+      const status = record.status;
+      statusCount[status] = (statusCount[status] || 0) + 1;
+    });
+
+    return Object.entries(statusCount).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  }, []);
+    
+    
+   
+const STATUS_COLORS = {
+  Present: '#22C55E', // green-500
+  Sick: '#EF4444',    // red-500
+  Absent: '#F97316',  // orange-500 (optional)
+  'Work from Home': '#3B82F6', // blue-500 (optional)
+};
+
+
   return (
     <div className='flex flex-col justify-center'>
         {/* Navbar start */}
@@ -34,7 +92,7 @@ const Analytics_consultant = ({details}) => {
                     </div>
 
                     <div className='flex  flex-col '>
-                        <h2 className='text-2xl font-black font-bold'>93%</h2>
+                        <h2 className='text-2xl font-black font-bold'>{Attendance_average}%</h2>
                         <p className='text-xs font-light text-gray-500'>Out of {details.attendance.length} days present</p>
                     </div>
                 </div>
@@ -77,7 +135,7 @@ const Analytics_consultant = ({details}) => {
                     </div>
 
                     <div className='flex  flex-col '>
-                        <h2 className='text-2xl font-black font-bold'>25%</h2>
+                        <h2 className='text-2xl font-black font-bold'>{Training_average}%</h2>
                         <p className='text-xs font-light text-gray-500'>Training completion rate</p>
                     </div>
                 </div>
@@ -97,9 +155,36 @@ const Analytics_consultant = ({details}) => {
                     <p className='font-light text-xs'>Your attendance summary for this month</p>
                 </div>
 
-                <div className='bg-black h-[80%] text-white'>
-                        GRAPH NEEDED TO BE ADDED
-                </div>
+                 <div className=' h-[80%] text-black flex items-center justify-center p-4 rounded-xl'>
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1.5, opacity: 1 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className='w-full max-w-md'
+      >
+        <ResponsiveContainer width='100%' height={300}>
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx='50%'
+              cy='50%'
+              outerRadius={100}
+              label
+              dataKey='value'
+              isAnimationActive={true}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={` cell-${index}`}
+                  fill={STATUS_COLORS[entry.name] || '#8884d8'}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </motion.div>
+            </div>
             </div>
 
         
@@ -114,17 +199,33 @@ const Analytics_consultant = ({details}) => {
                  <div className=' h-[90%] mt-5  w-full overflow-clip '>
                     <ul className='flex flex-col gap-5 '>
 
-                       {details.training.map((train_detail , idx)=>( <li className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                            <div key={idx}>
-                            <h4>{train_detail.training_course}</h4>
-                            <p className = {train_detail.status === "Completed" ? "text-emerald-500 font-semibold": train_detail.status === "Ongoing"? "text-yellow-500 font-semibold": "text-red-500 text-sm font-semibold" }>{train_detail.status}</p>
-                            </div>
-                            <div> 
-                                <MdOutlineWeb className='inline-block h-10 w-10 text-emerald-500' />
-                            </div>
-                        </li>
-                       ))    
-                    }
+                       {details.training.map((train_detail, idx) => (
+  <li key={idx} className='w-full border-2 p-2 px-4 border-gray-200 flex flex-row justify-between items-center rounded-2xl'>
+    <div>
+      <h4>{train_detail.training_course}</h4>
+      <p className={
+        train_detail.status === "Completed" ? "text-emerald-500 font-semibold"
+        : train_detail.status === "Ongoing" ? "text-yellow-500 font-semibold"
+        : "text-red-500 text-sm font-semibold"
+      }>
+        {train_detail.status}
+      </p>
+    </div>
+    <div>
+      {
+        train_detail.training_course.toLowerCase().includes("ai") ? (
+          <IoLogoDocker className='h-10 w-10 text-purple-500' />
+        ) : train_detail.training_course.toLowerCase().includes("devops") ? (
+          <FaGears className='h-10 w-10 text-blue-500' />
+        ) : train_detail.training_course.toLowerCase().includes("software") ? (
+          <GiRobotAntennas className='h-10 w-10 text-green-500' />
+        ) : (
+          <MdOutlineWeb className='h-10 w-10 text-emerald-500' />
+        )
+      }
+    </div>
+  </li>
+))}
 
 
                        
@@ -200,5 +301,6 @@ const Analytics_consultant = ({details}) => {
     </div>
   )
 }
+
 
 export default Analytics_consultant
