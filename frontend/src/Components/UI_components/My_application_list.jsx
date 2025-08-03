@@ -1,79 +1,30 @@
-import React from 'react'
-import { BsBuildings, BsInfoCircle } from 'react-icons/bs';
+import React, { useEffect, useState } from 'react'
+import { BsBuildings, BsInfoCircle, BsTypeH1 } from 'react-icons/bs';
+import { useNavigate } from 'react-router';
 
 
-const jobApplications = [
-  {
-    id: 1,
-    category: 'Enterprise Software',
-    title: 'Frontend Architect',
-    project: 'Enterprise Dashboard Redesign',
-    appliedDate: '1/16/2024',
-    status: 'under consideration',
-    statusColor: 'bg-blue-600',
-    buttonText: 'View Details',
-  },
-  {
-    id: 2,
-    category: 'Cloud Services',
-    title: 'DevOps Engineer',
-    project: 'Cloud Migration',
-    appliedDate: '2/01/2024',
-    status: 'interview scheduled',
-    statusColor: 'bg-green-600',
-    buttonText: 'Track Status',
-  },
-  {
-    id: 3,
-    category: 'Cloud Services',
-    title: 'Cloud Architect',
-    project: 'Azure Re-Architecture',
-    appliedDate: '2/10/2024',
-    status: 'rejected',
-    statusColor: 'bg-red-500',
-    buttonText: 'Learn More',
-  },{
-    id: 3,
-    category: 'Cloud Services',
-    title: 'Cloud Architect',
-    project: 'Azure Re-Architecture',
-    appliedDate: '2/10/2024',
-    status: 'rejected',
-    statusColor: 'bg-red-500',
-    buttonText: 'Learn More',
-  },{
-    id: 3,
-    category: 'Cloud Services',
-    title: 'Cloud Architect',
-    project: 'Azure Re-Architecture',
-    appliedDate: '2/10/2024',
-    status: 'rejected',
-    statusColor: 'bg-red-500',
-    buttonText: 'Learn More',
-  },{
-    id: 3,
-    category: 'Cloud Services',
-    title: 'Cloud Architect',
-    project: 'Azure Re-Architecture',
-    appliedDate: '2/10/2024',
-    status: 'rejected',
-    statusColor: 'bg-red-500',
-    buttonText: 'Learn More',
-  },{
-    id: 3,
-    category: 'Cloud Services',
-    title: 'Cloud Architect',
-    project: 'Azure Re-Architecture',
-    appliedDate: '2/10/2024',
-    status: 'rejected',
-    statusColor: 'bg-red-500',
-    buttonText: 'Learn More',
-  },
-];
-
-  
 
 const My_application_list = () => {
+
+const [User_details, setUser_details] = useState(null);
+ const navigator = useNavigate()
+
+useEffect(() => {
+  const  user_data = JSON.parse(localStorage.getItem("users"));
+
+  if(!(user_data)){
+    navigator('/consultant_login')}
+  else{
+    console.log(user_data);
+    setUser_details(user_data) 
+  }
+}, [navigator])
+
+
+
+
+
+
   return (
     <div className='flex flex-col justify-center'>
 
@@ -82,9 +33,9 @@ const My_application_list = () => {
         </div>
 
         <div className='w-full h-max p-10'>
-        {jobApplications.map((job) => (
+        {(User_details)?( User_details.applicantions_oppertunities.map((job,index) => (
         <div
-          key={job.id}
+          key={index}
           className="bg-white rounded-xl border border-gray-200 p-4 mt-10 w-full"
         >
           {/* Category Header */}
@@ -99,16 +50,27 @@ const My_application_list = () => {
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <BsInfoCircle className="text-gray-500" />
-                <span
-                  className={`text-xs text-white ${job.statusColor} px-2 py-0.5 rounded-full font-medium`}
-                >
-                  {job.status}
-                </span>
+               <span
+                className={`text-xs px-2 py-0.5 rounded-full font-medium text-white ${
+                  job.application_status.toLowerCase() === "accepted"
+                    ? "bg-green-500"
+                    : job.application_status.toLowerCase() === "rejected"
+                    ? "bg-red-500"
+                    : job.application_status.toLowerCase() === "interview"
+                    ? "bg-yellow-500"
+                    : job.application_status.toLowerCase() === "applied"
+                    ? "bg-blue-500"
+                    : "bg-gray-500"
+                }`}
+              >
+                {job.application_status}
+              </span>
+
               </div>
 
-              <h2 className="text-sm font-semibold text-gray-900">{job.title}</h2>
-              <p className="text-sm text-gray-500">{job.project}</p>
-              <p className="text-xs text-gray-400">Applied on {job.appliedDate}</p>
+              <h2 className="text-sm font-semibold text-gray-900">{job.opper_title}</h2>
+              <p className="text-sm text-gray-500">Project Duration: {job.opper_duration}</p>
+              <p className="text-xs text-gray-400">Applied on {new Date(job.applied_date).toLocaleDateString("en-GB")}</p>
             </div>
 
             {/* Button */}
@@ -117,7 +79,7 @@ const My_application_list = () => {
             </button>
           </div>
         </div>
-      ))}
+      ))) : (<h1>Fetching your application</h1>)}
 </div>
         
 
