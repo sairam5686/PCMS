@@ -11,17 +11,85 @@ import { HiPencilAlt } from "react-icons/hi";
 import { FaRegTrashAlt } from "react-icons/fa";
 import WorkHistory from './UI_components/WorkHistory';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion, startOptimizedAppearAnimation } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 
 
 
 
 
-const Analytics_consultant = ({details}) => {
+const Analytics_consultant = () => {
     const [Attendance_average, setAttendance_average] = useState(0)
     const [Training_average, setTraining_average] = useState(0)
+   
+
+
+// this is general property
+
+    const navigate = useNavigate();
+    const [details, setUser_details] = useState(null);
+
+  useEffect(() => {
+      const user = JSON.parse(localStorage.getItem("users")); 
+      if (!user) {
+        navigate("/consultant_login");
+      } else {
+        console.log(user);
+        setUser_details(user);
+      }
+    }, [navigate]);
+
+// this is end of general property 
+
+
+   
+   //  form logic start
     
+
+   
+     const [FormAdder, setFormAdder] = useState(null)
+     const {register,handleSubmit,watch,formState: { errors },} = useForm()
+ 
+ 
+     const onSubmit = (data) => {
+  const updatedForm = {
+    ...data,
+    username: details.username,
+  };
+
+  setFormAdder(updatedForm);
+  certificate_fetcher(updatedForm);
+  setIspopped(false);
+};
+
+
+
+
+ const certificate_fetcher = async (form) => {
+  try {
+    const response = await fetch("http://localhost:3000/form_updater", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    if (response.ok) {
+      const user = await response.json();  // full user object from backend
+      localStorage.setItem("users", JSON.stringify(user));
+      setUser_details(user);
+    }
+  } catch (err) {
+    console.error("Error updating:", err);
+  }
+};
+ 
+ 
+     // form logic end
+
     const caluc_average = () => {
+
+        if (!details) return;
         const new_filter_arr = details.attendance.filter((item)=>{
             if ( item.status.toLowerCase() == "present") {
                 return true
@@ -44,25 +112,26 @@ const Analytics_consultant = ({details}) => {
         setAttendance_average(((  new_filter_arr.length /details.attendance.length)*100).toFixed(2))
     }
     
-    useEffect(() => {
-      caluc_average()
-    }, [Attendance_average , Training_average])
+   useEffect(() => {
+    caluc_average();
+  }, [details]);
 
 
 
-    const chartData = useMemo(() => {
-    const statusCount = {};
+   const chartData = useMemo(() => {
+  if (!details || !details.attendance) return [];
 
-    details.attendance.forEach((record) => {
-      const status = record.status;
-      statusCount[status] = (statusCount[status] || 0) + 1;
-    });
+  const statusCount = {};
+  details.attendance.forEach((record) => {
+    const status = record.status;
+    statusCount[status] = (statusCount[status] || 0) + 1;
+  });
 
-    return Object.entries(statusCount).map(([name, value]) => ({
-      name,
-      value,
-    }));
-  }, []);
+  return Object.entries(statusCount).map(([name, value]) => ({
+    name,
+    value,
+  }));
+}, [details]);   
     
     
    
@@ -78,7 +147,8 @@ const STATUS_COLORS = {
 const [Ispopped, setIspopped] = useState(false)
 
   return (
-    <div className='flex flex-col justify-center'>
+    
+    <div className='flex flex-col justify-center'>{ details ?(<>
         {/* Navbar start */}
         <div className='flex flex-row justify-left items-center border-b-2 border-gray-200 p-5'>
             <h2 className='text-2xl font-semibold '>Consultant Dashboard</h2>
@@ -88,7 +158,7 @@ const [Ispopped, setIspopped] = useState(false)
         {/* k-card start */}
         <div className='flex flex-row justify-between items-center w-full mt-5 px-5  py-2 '>
 
-               {} <div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
+                <div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
                     <div className=' flex justify-between items-center'>
                         <h6 className='text-sm font-semibold'>Total Attendance</h6>
                         <CiClock2 className='inline-block'/>
@@ -106,9 +176,9 @@ const [Ispopped, setIspopped] = useState(false)
                     <div className=' flex justify-between items-center'>
                         <h6 className='text-sm font-semibold'>Certificates</h6>
                         <PiMedalLight className='inline-block '/>
-                    </div>
+                </div>
 
-                    <div className='flex  flex-col '>
+                <div className='flex  flex-col '>
                         <h2 className='text-2xl font-black font-bold'>{details.certificates.length}</h2>
                         <p className='text-xs font-light text-gray-500'>Active certifications</p>
                     </div>
@@ -116,7 +186,7 @@ const [Ispopped, setIspopped] = useState(false)
 
 
 
-<div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
+                <div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
                     <div className=' flex justify-between items-center'>
                         <h6 className='text-sm font-semibold'>Trainings</h6>
                         < IoBookOutline className='inline-block '/>
@@ -131,7 +201,7 @@ const [Ispopped, setIspopped] = useState(false)
 
 
 
-<div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
+              <div className='border-3 border-gray-200 p-5 flex flex-col gap-5  h-35 w-60 rounded-2xl '>
                     <div className=' flex justify-between items-center'>
                         <h6 className='text-sm font-semibold'>Completed</h6>
                         <MdOutlineVerified className='inline-block '/>
@@ -262,7 +332,7 @@ const [Ispopped, setIspopped] = useState(false)
                     </div>
 
                     <div>
-                        <button type="button"  onClick={()=>{setIspopped(true)}} class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 duration-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-2.5 py-2.5 text-center me-1.5 mb-1.5 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">+ Add Certificate</button>
+                        <button type="button"  onClick={()=>{setIspopped(true)}} className="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 duration-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-2.5 py-2.5 text-center me-1.5 mb-1.5 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">+ Add Certificate</button>
 
 
                           {/* this is the start of the popup dialog */}
@@ -273,12 +343,12 @@ const [Ispopped, setIspopped] = useState(false)
                            Ispopped && (
                       <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 z-50">
                         <div className="bg-transparent  p-6 rounded-2xl shadow-2xl w-[500px] max-w-full">
-                          <form className="space-y-4">
+                          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                       <label className="block text-sm font-medium text-gray-900 ">
                         Certificate Name
                       </label>
                       <input
-                        type="text"
+                        type="text" {...register("Certificate_name" , {required:true})}
                         className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
                       />
 
@@ -286,7 +356,7 @@ const [Ispopped, setIspopped] = useState(false)
                         Certification Authority
                       </label>
                       <input
-                        type="text"
+                        type="text" {...register("Certificate_Authority" , {required:true})}
                         className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
                       />
 
@@ -294,7 +364,7 @@ const [Ispopped, setIspopped] = useState(false)
                         Course Duration
                       </label>
                       <input
-                        type="text"
+                        type="text" {...register("Course_duration" , {required:true})}
                         className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
                       />
 
@@ -304,7 +374,7 @@ const [Ispopped, setIspopped] = useState(false)
                             Start Date
                           </label>
                           <input
-                            type="text"
+                            type="text" {...register("Start_date", {required: true})}
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
                           />
                         </div>
@@ -313,27 +383,15 @@ const [Ispopped, setIspopped] = useState(false)
                             End Date
                           </label>
                           <input
-                            type="text"
+                            type="text" {...register("End_date" , {required:true}) }
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
                           />
                         </div>
                       </div>
 
                       <div className="flex justify-end space-x-3 mt-6">
-                        <button
-                          type="button"
-                          onClick={() => setIspopped(false)}
-                          className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          onClick={() => setIspopped(false)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                        >
-                          Submit
-                        </button>
+                        <button  onClick={() => setIspopped(false)} className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"> Cancel</button>
+                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"> Submit </button>
                       </div>
                     </form>
                   </div>
@@ -382,7 +440,7 @@ const [Ispopped, setIspopped] = useState(false)
     <WorkHistory work_details = {details.work_experience} />
     </div>
 
-    </div>
+                    </>):<h1>Loading</h1>  }</div>
   )
 }
 

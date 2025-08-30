@@ -40,6 +40,37 @@ Router.post('/login_creadentials' , async (req,res) => {
 });
 
 
+Router.post("/form_updater" , async (req, res) => {
+    try {
+      const  {Certificate_Authority , Certificate_name , Course_duration , Start_date ,End_date , username} = req.body;
+   
+     
+        
+        
+        
+      await  consultant_model.updateOne({username:username}, 
+            {
+                $push:{
+                    certificates:{
+                            cert_name: Certificate_name , 
+                            cert_authority: Certificate_Authority,
+                            course_duration:Course_duration,
+                            start_date:new Date(Start_date),
+                            end_date:new Date(End_date)}
+                }
+            }
+        )
+
+        const user_data = await consultant_model.findOne({username:username});
+        console.log(user_data);
+        
+         res.json(user_data);   
+    } catch (error) {
+        console.log(error);
+        
+    }
+})
+
 
 
 

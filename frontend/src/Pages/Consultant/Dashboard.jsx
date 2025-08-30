@@ -5,27 +5,8 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
+
 const Dashboard = () => {
-
-    const navigate = useNavigate();
-  const [User_details, setUser_details] = useState(null);
-
-
-
-useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("users")); 
-
-    if (!user) {
-      navigate("/consultant_login");
-    } else {
-      // ✅ Set user details
-      console.log(user);
-      
-      setUser_details(user);
-    }
-  }, [navigate]);
-
-
 
   return (
     <div className='grid grid-cols-[16rem_1fr] min-h-screen'>
@@ -34,7 +15,7 @@ useEffect(() => {
   </div>
   <div className='overflow-y-auto mb-5'>
    
-    {User_details ?   (<Analytics_consultant  details ={User_details} />) : (<h1> Fetching the details </h1>)}
+   <Analytics_consultant  />
   </div>
 </div>
 
