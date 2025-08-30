@@ -74,6 +74,9 @@ const STATUS_COLORS = {
 };
 
 
+
+const [Ispopped, setIspopped] = useState(false)
+
   return (
     <div className='flex flex-col justify-center'>
         {/* Navbar start */}
@@ -251,40 +254,121 @@ const STATUS_COLORS = {
          <div className='flex flex-row justify-between items-center'>
                   
                   <div>
+                    <div>
                     <h1 className='font-semibold text-2xl'>Certificates </h1>
+                    </div>
+
                     <p className='font-light text-xs'>Manage your professional certifications</p>
                     </div>
 
                     <div>
-                        <button type="button" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 duration-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-2.5 py-2.5 text-center me-1.5 mb-1.5 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">+ Add Certificate</button>
-                    </div>
-
-        </div>
+                        <button type="button"  onClick={()=>{setIspopped(true)}} class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 duration-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-2.5 py-2.5 text-center me-1.5 mb-1.5 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">+ Add Certificate</button>
 
 
-
-        <div className=' h-[90%] mt-5  w-full overflow-clip '>
-                    <ul className='flex flex-col gap-5 '>
-
-                        {  details.certificates.map((item , index)=>( <li className='w-full border-2 p-5 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
-                            <div key={index}>
-                            <h4>{item.cert_name}</h4>
-                            <p className='text-gray-600 text-sm font-light'>{item.cert_authority}</p>
-                            <p className='text-gray-600 text-xs font-extralight'>Issued: {new Date(item.start_date).toLocaleDateString("en-GB") } • Expires: {new Date(item.end_date).toLocaleDateString("en-GB")}</p>
-                            <p className='text-gray-600 text-xs font-extralight'>Course Duration : {item.course_duration}</p>
+                          {/* this is the start of the popup dialog */}
 
 
-                            </div>
-                            <div className='flex flex-row gap-4.5 justify-center items-center'> 
-                                <button  >
-                                <HiPencilAlt className='inline-block h-5 w-5  text-black' />
-                                </button>
 
-                                <button >
-                                <FaRegTrashAlt className='inline-block h-5 w-5 text-black' />
-                                </button>
-                            </div>
-                        </li>
+                          { 
+                           Ispopped && (
+                      <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 z-50">
+                        <div className="bg-transparent  p-6 rounded-2xl shadow-2xl w-[500px] max-w-full">
+                          <form className="space-y-4">
+                      <label className="block text-sm font-medium text-gray-900 ">
+                        Certificate Name
+                      </label>
+                      <input
+                        type="text"
+                        className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
+                      />
+
+                      <label className="block text-sm font-medium text-gray-900 ">
+                        Certification Authority
+                      </label>
+                      <input
+                        type="text"
+                        className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
+                      />
+
+                      <label className="block text-sm font-medium text-gray-900 ">
+                        Course Duration
+                      </label>
+                      <input
+                        type="text"
+                        className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
+                      />
+
+                      <div className="flex space-x-4">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium ">
+                            Start Date
+                          </label>
+                          <input
+                            type="text"
+                            className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-black ">
+                            End Date
+                          </label>
+                          <input
+                            type="text"
+                            className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 "
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end space-x-3 mt-6">
+                        <button
+                          type="button"
+                          onClick={() => setIspopped(false)}
+                          className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          onClick={() => setIspopped(false)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                )}
+                {/* this is the end of the popup dialog */}
+
+                </div>
+
+              </div>
+
+
+
+              <div className=' h-[90%] mt-5  w-full overflow-clip '>
+                          <ul className='flex flex-col gap-5 '>
+
+                              {  details.certificates.map((item , index)=>( <li className='w-full border-2 p-5 px-4 border-gray-200 flex flex-row justify-between items-center  rounded-2xl '>
+                                  <div key={index}>
+                                  <h4>{item.cert_name}</h4>
+                                  <p className='text-gray-600 text-sm font-light'>{item.cert_authority}</p>
+                                  <p className='text-gray-600 text-xs font-extralight'>Issued: {new Date(item.start_date).toLocaleDateString("en-GB") } • Expires: {new Date(item.end_date).toLocaleDateString("en-GB")}</p>
+                                  <p className='text-gray-600 text-xs font-extralight'>Course Duration : {item.course_duration}</p>
+
+
+                                  </div>
+                                  <div className='flex flex-row gap-4.5 justify-center items-center'> 
+                                      <button  >
+                                      <HiPencilAlt className='inline-block h-5 w-5  text-black' />
+                                      </button>
+
+                                      <button >
+                                      <FaRegTrashAlt className='inline-block h-5 w-5 text-black' />
+                                      </button>
+                                  </div>
+                              </li>
                         ) )}
 
                     </ul>
